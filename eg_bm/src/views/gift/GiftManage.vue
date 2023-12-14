@@ -1,7 +1,15 @@
 <script setup>
 import { Edit, Delete } from '@element-plus/icons-vue'
+import { QuillEditor } from '@vueup/vue-quill'
 
+import { Plus } from '@element-plus/icons-vue'
 import { ref } from 'vue'
+import { ElButton, ElDrawer } from 'element-plus'
+
+import { computed } from 'vue'
+
+//控制抽屉是否显示
+const visibleDrawer = ref(false)
 
 //文章分类数据模型
 const categorys = ref([
@@ -16,6 +24,16 @@ const categorys = ref([
     categoryName: '美食',
     createTime: '2023-09-02 12:06:59',
     updateTime: '2023-09-02 12:06:59',
+  },
+])
+
+const urls = ref([
+  {
+    giftImgId: 1,
+    giftId: '1',
+    userId: ' ',
+    giftImgUrl: 'https://easygift.oss-cn-beijing.aliyuncs.com/OIP-C.jpg',
+    isDeleted: 0,
   },
 ])
 
@@ -52,13 +70,35 @@ const onCurrentChange = (num) => {
   pageNum.value = num
   giftList()
 }
+import { ElMessage } from 'element-plus'
+//通过
+const pass = () => {
+  ElMessage.success('审核通过')
+  visibleDrawer.value = false
+}
+//不通过
+const reject = () => {
+  ElMessage.fail('审核通过')
+  visibleDrawer.value = false
+}
 
 //回显文章分类
-import { giftCategoryService, giftListService } from '@/api/article.js'
+import {
+  giftCategoryService,
+  giftListService,
+  giftInfoService,
+  giftImgsService,
+} from '@/api/article.js'
 const giftCategoryList = async () => {
   let result = await giftCategoryService()
   categorys.value = result.data
   console.log(categorys)
+}
+
+const giftImgsList = async (id) => {
+  let result = await giftImgsService(id)
+  urls.value = result.data
+  console.log(urls)
 }
 
 const giftList = async () => {
@@ -85,12 +125,38 @@ const giftList = async () => {
   }
 }
 //调用
+
 giftCategoryList()
 giftList()
 
 //搜索
 const onSearch = async () => {
   giftList()
+}
+
+const giftsModel = ref([
+  {
+    giftId: '2',
+    userId: '1',
+    giftName: null,
+    description: null,
+    createTime: '2023-12-13T16:06:55',
+    state: null,
+  },
+])
+
+const giftListOne = async (params) => {
+  let result = await giftInfoService(params)
+  giftsModel.value = result.data
+  console.log(giftsModel)
+}
+
+//打开抽屉
+const open = (row) => {
+  visibleDrawer.value = true
+  let params = row.giftId
+  giftListOne(params)
+  giftImgsList(params)
 }
 </script>
 <template>
@@ -142,8 +208,20 @@ const onSearch = async () => {
       >
       <el-table-column label="操作" width="100">
         <template #default="{ row }">
-          <el-button :icon="Edit" circle plain type="primary"></el-button>
-          <el-button :icon="Delete" circle plain type="danger"></el-button>
+          <el-button
+            :icon="Edit"
+            circle
+            plain
+            type="primary"
+            @click="open(row)"
+          ></el-button>
+          <el-button
+            :icon="Delete"
+            circle
+            plain
+            type="danger"
+            @click="open"
+          ></el-button>
         </template>
       </el-table-column>
       <template #empty>
@@ -164,30 +242,44 @@ const onSearch = async () => {
     />
 
     <!-- 抽屉 -->
-    <el-drawer
-      v-model="visibleDrawer"
-      title="添加文章"
-      direction="rtl"
-      size="50%"
-    >
-      添加文章表单
-      <el-form :model="articleModel" label-width="100px">
-        <el-form-item label="文章标题">
+    <el-drawer v-model="visibleDrawer" direction="rtl" size="70%">
+      <el-form :model="giftsModel" label-width="100px">
+        <el-form-item label="物品名称">
           <el-input
-            v-model="articleModel.title"
-            placeholder="请输入标题"
+            disabled
+            placeholder=" "
+            v-model="giftsModel.giftName"
           ></el-input>
         </el-form-item>
-        <el-form-item label="文章分类">
-          <el-select placeholder="请选择" v-model="articleModel.categoryId">
-            <el-option
-              v-for="c in categorys"
-              :key="c.cId"
-              :label="c.categoryName"
-              :value="c.cId"
+        <el-form-item label="物品描述">
+          <el-input
+            autosize
+            type="textarea"
+            disabled
+            placeholder=" "
+            v-model="giftsModel.description"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="物品图片"> </el-form-item>
+        <div class="block text-center" m="t-4">
+          <el-carousel trigger="click" height="300px">
+            <el-carousel-item v-for="url in urls" :key="url">
+              <el-image
+                :src="url.giftImgUrl"
+                style="width: 100%; height: 100%"
+                :fit="contain"
+              />
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+        <h1></h1>
+        <el-form-item>
+          <div style="width: 80%; text-align: center">
+            <el-button type="primary" @click="pass()">通过</el-button
+            ><el-button type="info" @click="addArticle('草稿')"
+              >不通过</el-button
             >
-            </el-option>
-          </el-select>
+          </div>
         </el-form-item>
       </el-form>
     </el-drawer>
@@ -243,5 +335,24 @@ const onSearch = async () => {
   :deep(.ql-editor) {
     min-height: 200px;
   }
+}
+
+.el-descriptions {
+  margin-top: 20px;
+}
+.el-carousel__item h3 {
+  color: #475669;
+  opacity: 0.75;
+  line-height: 150px;
+  margin: 0;
+  text-align: center;
+}
+
+.el-carousel__item:nth-child(2n) {
+  background-color: #99a9bf;
+}
+
+.el-carousel__item:nth-child(2n + 1) {
+  background-color: #d3dce6;
 }
 </style>

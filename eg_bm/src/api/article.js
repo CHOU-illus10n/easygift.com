@@ -54,3 +54,11 @@ export const giftOrderService = (params)=>{
 export const giftCategoryService = ()=>{
     return request.get('/category');
 }
+
+export const giftInfoService = (id)=>{
+    return request.get('/gift/one?id='+id);
+}
+
+export const giftImgsService = (giftId)=>{
+    return request.get('/gift/img?giftId='+giftId);
+}

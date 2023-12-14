@@ -8,6 +8,17 @@ import {
   EditPen,
   SwitchButton,
   CaretBottom,
+  Setting,
+  HomeFilled,
+  Files,
+  ShoppingTrolley,
+  Goods,
+  Tickets,
+  Collection,
+  DocumentChecked,
+  FolderChecked,
+  Document,
+  DataBoard,
 } from '@element-plus/icons-vue'
 import avatar from '@/assets/default.png'
 
@@ -87,19 +98,19 @@ const handleCommand = (command) => {
         <el-sub-menu index="1">
           <template #title>
             <el-icon>
-              <UserFilled />
+              <FolderChecked />
             </el-icon>
             <span>审核管理</span>
           </template>
           <el-menu-item index="/gift">
             <el-icon>
-              <User />
+              <DocumentChecked />
             </el-icon>
             <span>物品审核</span>
           </el-menu-item>
           <el-menu-item>
             <el-icon>
-              <Crop />
+              <Document />
             </el-icon>
             <span>审核日志</span>
           </el-menu-item>
@@ -107,19 +118,19 @@ const handleCommand = (command) => {
         <el-sub-menu index="2">
           <template #title>
             <el-icon>
-              <UserFilled />
+              <DataBoard />
             </el-icon>
             <span>转赠平台管理</span>
           </template>
           <el-menu-item index="/gift/detail">
             <el-icon>
-              <User />
+              <Crop />
             </el-icon>
             <span>二手物品管理</span>
           </el-menu-item>
           <el-menu-item index="/gift/order">
             <el-icon>
-              <Crop />
+              <Collection />
             </el-icon>
             <span>交易记录管理</span>
           </el-menu-item>
@@ -127,24 +138,24 @@ const handleCommand = (command) => {
         <el-sub-menu index="3">
           <template #title>
             <el-icon>
-              <UserFilled />
+              <ShoppingTrolley />
             </el-icon>
             <span>积分商城管理</span>
           </template>
           <el-menu-item>
             <el-icon>
-              <User />
+              <Goods />
             </el-icon>
             <span>商品管理</span>
           </el-menu-item>
           <el-menu-item>
             <el-icon>
-              <Crop />
+              <Tickets />
             </el-icon>
             <span>订单管理</span>
           </el-menu-item>
         </el-sub-menu>
-        <el-menu-item index="/article/category">
+        <!-- <el-menu-item index="/article/category">
           <el-icon>
             <Management />
           </el-icon>
@@ -155,7 +166,7 @@ const handleCommand = (command) => {
             <Promotion />
           </el-icon>
           <span>文章管理</span>
-        </el-menu-item>
+        </el-menu-item> -->
         <el-sub-menu index="4">
           <template #title>
             <el-icon>
@@ -184,21 +195,17 @@ const handleCommand = (command) => {
         </el-sub-menu>
         <el-sub-menu index="5">
           <template #title>
-            <el-icon>
-              <UserFilled />
-            </el-icon>
+            <el-icon><Setting /></el-icon>
             <span>基本管理</span>
           </template>
           <el-menu-item index="/user/info">
             <el-icon>
-              <User />
+              <Files />
             </el-icon>
             <span>物品类型管理</span>
           </el-menu-item>
           <el-menu-item>
-            <el-icon>
-              <Crop />
-            </el-icon>
+            <el-icon><HomeFilled /></el-icon>
             <span>小区管理</span>
           </el-menu-item>
         </el-sub-menu>
@@ -287,14 +294,6 @@ const handleCommand = (command) => {
         outline: none;
       }
     }
-  }
-
-  .el-footer {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    color: #666;
   }
 }
 </style>
