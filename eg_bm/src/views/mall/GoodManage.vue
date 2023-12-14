@@ -1,30 +1,37 @@
 <script setup>
 import { Edit, Delete } from '@element-plus/icons-vue'
 import { ref } from 'vue'
+
+//用户搜索时的信息
+const gName = ref('')
+
 //文章分类数据模型
-const gifts = ref([
+const categorys = ref([
   {
-    giftId: '2',
-    userId: '1',
-    giftName: null,
-    description: null,
-    createTime: '2023-12-13T16:06:55',
-    state: null,
+    categoryId: 3,
+    categoryName: '',
+    createTime: '2023-09-02 12:06:59',
+    updateTime: '2023-09-02 12:06:59',
+  },
+  {
+    categoryId: 4,
+    categoryName: '美食',
+    createTime: '2023-09-02 12:06:59',
+    updateTime: '2023-09-02 12:06:59',
   },
 ])
-
-const orders = ref([
+const goods = ref([
   {
-    giftOrderId: '1',
-    giftOrderStatus: 3,
-    giftId: '1',
-    giftName: '鼠标',
-    senderId: '1',
-    receiverId: '2',
-    incrPoint: 10,
-    createTime: '2023-12-14T13:55:21',
-    updateTime: '2023-12-14T13:55:21',
-    isDeleted: 1,
+    goodId: 1,
+    goodCategoryId: 1,
+    goodImg: null,
+    goodName: null,
+    goodPoint: 0,
+    goodDesc: null,
+    goodCount: 0,
+    createTime: '2023-12-14T13:11:37.000+00:00',
+    updateTime: '2023-12-14T13:11:37.000+00:00',
+    isDeleted: 0,
   },
 ])
 
@@ -34,58 +41,91 @@ const pageSize = ref(4) //每页条数
 //当每页条数发生了变化，调用此函数
 const onSizeChange = (size) => {
   pageSize.value = size
-  giftShowList()
+  goodShowList()
 }
 //当前页码发生变化，调用此函数
 const onCurrentChange = (num) => {
   pageNum.value = num
-  giftShowList()
+  goodShowList()
 }
 
 //回显文章分类
-import { giftGetService, giftOrderService } from '@/api/article.js'
-const giftList = async () => {
-  let result = await giftGetService()
-  gifts.value = result.data
-  console.log(gifts)
+import {
+  giftCategoryService,
+  giftListService,
+  goodListService,
+  goodInfoService,
+} from '@/api/article.js'
+const giftCategoryList = async () => {
+  let result = await giftCategoryService()
+  categorys.value = result.data
+  console.log(categorys)
+}
+//搜索事件绑定
+const onSearch = async () => {
+  goodShowList()
 }
 
-//声明一个异步的函数
-const OrderList = async () => {
+const goodShowList = async () => {
   let params = {
     pageNum: pageNum.value,
     pageSize: pageSize.value,
+    goodName: gName.value ? gName.value : null,
   }
-  let result = await giftOrderService(params)
+  let result = await goodListService(params)
   console.log(result)
-  orders.value = result.data.items
+  goods.value = result.data.items
   total.value = result.data.total
-  for (let i = 0; i < orders.value.length; i++) {
-    let order = orders.value[i]
-    for (let j = 0; j < gifts.value.length; j++) {
-      if (order.giftId == gifts.value[j].giftId) {
-        order.giftName = gifts.value[j].giftName
+
+  for (let i = 0; i < goods.value.length; i++) {
+    let good = goods.value[i]
+    for (let j = 0; j < categorys.value.length; j++) {
+      if (good.goodCategoryId == categorys.value[j].categoryId) {
+        good.categoryName = categorys.value[j].categoryName
+        console.log(goods.categoryName)
       }
     }
   }
 }
-giftList()
-OrderList()
+giftCategoryList()
+goodShowList()
 </script>
 <template>
   <el-card class="page-container">
     <template #header>
       <div class="header">
-        <span>二手物品管理</span>
+        <span>积分商品管理</span>
       </div>
     </template>
-    <el-table :data="orders" style="width: 100%">
+    <el-form inline>
+      <el-form-item label="商品名称">
+        <el-input v-model="gName" placeholder="请输入商品名称" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" @click="onSearch">搜索</el-button>
+        <el-button @click="gName = ''">重置</el-button>
+      </el-form-item>
+    </el-form>
+    <el-table :data="goods" style="width: 100%">
       <el-table-column label="序号" width="100" type="index"> </el-table-column>
-      <el-table-column label="物品名称" prop="giftName"></el-table-column>
-      <el-table-column label="创建人id" prop="senderId"></el-table-column>
-      <el-table-column label="接收人id" prop="senderId"></el-table-column>
-      <el-table-column label="增加积分" prop="incrPoint"></el-table-column>
-      <el-table-column label="交易时间" prop="createTime"></el-table-column>
+      <el-table-column label="商品id" prop="goodId"></el-table-column>
+      <el-table-column label="商品名称" prop="goodName"></el-table-column>
+      <el-table-column label="分类名称" prop="categoryName"></el-table-column>
+      <el-table-column label="图片">
+        <template v-slot="{ row }">
+          <el-image
+            style="width: 30px; height: 30px"
+            :src="row.goodImg"
+            :preview-src-list="[row.goodImg]"
+            :key="row.goodId"
+          >
+            <div slot="error" class="image-slot">
+              <i class="el-icon-picture-outline"></i>
+            </div>
+          </el-image> </template
+      ></el-table-column>
+      <el-table-column label="所需积分" prop="goodPoint"></el-table-column>
+      <el-table-column label="所剩数量" prop="goodCount"></el-table-column>
       <el-table-column label="操作" width="100">
         <template #default="{ row }">
           <el-button

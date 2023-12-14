@@ -69,6 +69,7 @@ const giftShowList = async () => {
   let result = await giftListAllService(params)
   console.log(result)
   gifts.value = result.data.items
+  total.value = result.data.total
   for (let i = 0; i < gifts.value.length; i++) {
     let gift = gifts.value[i]
     for (let j = 0; j < categorys.value.length; j++) {

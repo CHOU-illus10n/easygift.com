@@ -13,7 +13,8 @@ import GiftManageVue from '@/views/gift/GiftManage.vue'
 import StartVue from '@/views/Start.vue'
 import GiftShowVue from '@/views/gift/GiftShow.vue'
 import OrderVue from '@/views/gift/Order.vue'
-
+import GoodManageVue from '@/views/mall/GoodManage.vue'
+import GoodOrderVue from '@/views/mall/GoodOrder.vue'
 //定义路由关系
 const routes = [
     { path: '/login', component: LoginVue },
@@ -23,6 +24,8 @@ const routes = [
             { path:'/gift',component:GiftManageVue },
             { path:'/gift/detail',component:GiftShowVue},
             { path:'/gift/order',component:OrderVue},
+            { path:'/good',component:GoodManageVue},
+            { path:'/good/order',component:GoodOrderVue},
             // { path: '/article/category', component: ArticleCategoryVue },
             { path: '/article/manage', component: ArticleManageVue },
             { path: '/user/info', component: UserInfoVue },

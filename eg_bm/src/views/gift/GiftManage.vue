@@ -7,10 +7,13 @@ import { ref } from 'vue'
 import { ElButton, ElDrawer } from 'element-plus'
 
 import { computed } from 'vue'
-
-//控制抽屉是否显示
-const visibleDrawer = ref(false)
-
+import {
+  giftCategoryService,
+  giftListService,
+  giftInfoService,
+  giftImgsService,
+  giftChangeStService,
+} from '@/api/article.js'
 //文章分类数据模型
 const categorys = ref([
   {
@@ -37,12 +40,6 @@ const urls = ref([
   },
 ])
 
-//用户搜索时选中的分类id
-const categoryId = ref('')
-
-//用户搜索时选中的发布状态
-const state = ref('')
-
 //文章列表数据模型
 const gifts = ref([
   {
@@ -54,6 +51,13 @@ const gifts = ref([
     state: null,
   },
 ])
+//控制抽屉是否显示
+const visibleDrawer = ref(false)
+//用户搜索时选中的分类id
+const categoryId = ref('')
+
+//用户搜索时选中的发布状态
+const state = ref('')
 
 //分页条数据模型
 const pageNum = ref(1) //当前页
@@ -71,11 +75,6 @@ const onCurrentChange = (num) => {
   giftList()
 }
 import { ElMessage } from 'element-plus'
-//通过
-const pass = () => {
-  ElMessage.success('审核通过')
-  visibleDrawer.value = false
-}
 //不通过
 const reject = () => {
   ElMessage.fail('审核通过')
@@ -83,18 +82,12 @@ const reject = () => {
 }
 
 //回显文章分类
-import {
-  giftCategoryService,
-  giftListService,
-  giftInfoService,
-  giftImgsService,
-} from '@/api/article.js'
 const giftCategoryList = async () => {
   let result = await giftCategoryService()
   categorys.value = result.data
   console.log(categorys)
 }
-
+//获取物品图片
 const giftImgsList = async (id) => {
   let result = await giftImgsService(id)
   urls.value = result.data
@@ -125,7 +118,6 @@ const giftList = async () => {
   }
 }
 //调用
-
 giftCategoryList()
 giftList()
 
@@ -157,6 +149,20 @@ const open = (row) => {
   let params = row.giftId
   giftListOne(params)
   giftImgsList(params)
+}
+
+const changeState = async (params) => {
+  let result = await giftChangeStService(params)
+  console.log(result)
+}
+
+//通过
+const pass = () => {
+  ElMessage.success('审核通过')
+  visibleDrawer.value = false
+  console.log(urls)
+  changeState(urls.value[0].giftId)
+  giftList()
 }
 </script>
 <template>

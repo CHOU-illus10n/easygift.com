@@ -62,3 +62,17 @@ export const giftInfoService = (id)=>{
 export const giftImgsService = (giftId)=>{
     return request.get('/gift/img?giftId='+giftId);
 }
+
+
+export const giftChangeStService =(id)=>{
+    return request.post('/gift/change?id='+id);
+}
+
+//查询所有商品信息
+export const goodListService = (params)=>{
+    return request.get('/good',{params:params});
+}
+//根据id查询信息
+export const goodInfoService = (name)=>{
+    return request.get('/good?goodName='+name);
+}

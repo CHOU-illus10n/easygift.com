@@ -142,13 +142,13 @@ const handleCommand = (command) => {
             </el-icon>
             <span>积分商城管理</span>
           </template>
-          <el-menu-item>
+          <el-menu-item index="/good">
             <el-icon>
               <Goods />
             </el-icon>
             <span>商品管理</span>
           </el-menu-item>
-          <el-menu-item>
+          <el-menu-item index="/good/order">
             <el-icon>
               <Tickets />
             </el-icon>
