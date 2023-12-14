@@ -1,39 +1,30 @@
 <script setup>
 import { Edit, Delete } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-
 //文章分类数据模型
-const categorys = ref([
-  {
-    categoryId: 3,
-    categoryName: '',
-    createTime: '2023-09-02 12:06:59',
-    updateTime: '2023-09-02 12:06:59',
-  },
-  {
-    categoryId: 4,
-    categoryName: '美食',
-    createTime: '2023-09-02 12:06:59',
-    updateTime: '2023-09-02 12:06:59',
-  },
-])
 const gifts = ref([
   {
-    giftId: '1',
+    giftId: '2',
     userId: '1',
-    giftName: '1',
-    description: '1',
-    categoryId: '1',
-    giftOriginPrice: 11.1,
-    purchaseTime: null,
-    dealTime: null,
-    dealAddress: null,
-    giftQuality: 0,
-    state: 1,
-    failureTypeId: null,
-    createTime: '2023-12-13T02:52:43.000+00:00',
-    updateTime: '2023-12-13T09:08:45.000+00:00',
-    isDeleted: 0,
+    giftName: null,
+    description: null,
+    createTime: '2023-12-13T16:06:55',
+    state: null,
+  },
+])
+
+const orders = ref([
+  {
+    giftOrderId: '1',
+    giftOrderStatus: 3,
+    giftId: '1',
+    giftName: '鼠标',
+    senderId: '1',
+    receiverId: '2',
+    incrPoint: 10,
+    createTime: '2023-12-14T13:55:21',
+    updateTime: '2023-12-14T13:55:21',
+    isDeleted: 1,
   },
 ])
 
@@ -52,34 +43,34 @@ const onCurrentChange = (num) => {
 }
 
 //回显文章分类
-import { giftCategoryService, giftListService } from '@/api/article.js'
-const giftCategoryList = async () => {
-  let result = await giftCategoryService()
-  categorys.value = result.data
-  console.log(categorys)
+import { giftGetService, giftOrderService } from '@/api/article.js'
+const giftList = async () => {
+  let result = await giftGetService()
+  gifts.value = result.data
+  console.log(gifts)
 }
 
 //声明一个异步的函数
-import { giftListAllService } from '@/api/article.js'
-const giftShowList = async () => {
+const OrderList = async () => {
   let params = {
     pageNum: pageNum.value,
     pageSize: pageSize.value,
   }
-  let result = await giftListAllService(params)
+  let result = await giftOrderService(params)
   console.log(result)
-  gifts.value = result.data.items
-  for (let i = 0; i < gifts.value.length; i++) {
-    let gift = gifts.value[i]
-    for (let j = 0; j < categorys.value.length; j++) {
-      if (gift.categoryId == categorys.value[j].categoryId) {
-        gift.categoryName = categorys.value[j].categoryName
+  orders.value = result.data.items
+
+  for (let i = 0; i < orders.value.length; i++) {
+    let order = orders.value[i]
+    for (let j = 0; j < gifts.value.length; j++) {
+      if (order.giftId == gifts.value[j].giftId) {
+        order.giftName = gifts.value[j].giftName
       }
     }
   }
 }
-giftCategoryList()
-giftShowList()
+giftList()
+OrderList()
 </script>
 <template>
   <el-card class="page-container">
@@ -88,13 +79,13 @@ giftShowList()
         <span>二手物品管理</span>
       </div>
     </template>
-    <el-table :data="gifts" style="width: 100%">
+    <el-table :data="orders" style="width: 100%">
       <el-table-column label="序号" width="100" type="index"> </el-table-column>
       <el-table-column label="物品名称" prop="giftName"></el-table-column>
-      <el-table-column label="创建人id" prop="userId"></el-table-column>
-      <el-table-column label="分类名称" prop="categoryName"></el-table-column>
-      <el-table-column label="创建人id" prop="giftId"></el-table-column>
-      <el-table-column label="创建人id" prop="giftId"></el-table-column>
+      <el-table-column label="创建人id" prop="senderId"></el-table-column>
+      <el-table-column label="接收人id" prop="senderId"></el-table-column>
+      <el-table-column label="增加积分" prop="incrPoint"></el-table-column>
+      <el-table-column label="交易时间" prop="createTime"></el-table-column>
       <el-table-column label="操作" width="100">
         <template #default="{ row }">
           <el-button

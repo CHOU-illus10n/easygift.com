@@ -7,15 +7,15 @@ import { ref } from 'vue'
 const categorys = ref([
   {
     categoryId: 3,
-    "categoryName": "",
-    "createTime": '2023-09-02 12:06:59',
-    "updateTime": '2023-09-02 12:06:59',
+    categoryName: '',
+    createTime: '2023-09-02 12:06:59',
+    updateTime: '2023-09-02 12:06:59',
   },
   {
     categoryId: 4,
-    "categoryName": '美食',
-    "createTime": '2023-09-02 12:06:59',
-    "updateTime": '2023-09-02 12:06:59',
+    categoryName: '美食',
+    createTime: '2023-09-02 12:06:59',
+    updateTime: '2023-09-02 12:06:59',
   },
 ])
 
@@ -26,7 +26,7 @@ const categoryId = ref('')
 const state = ref('')
 
 //文章列表数据模型
-const articles = ref([
+const gifts = ref([
   {
     giftId: '2',
     userId: '1',
@@ -54,49 +54,44 @@ const onCurrentChange = (num) => {
 }
 
 //回显文章分类
-import {
-  articleCategoryListService,
-  giftListService,
-} from '@/api/article.js'
-const articleCategoryList = async () => {
-  let result = await articleCategoryListService()
+import { giftCategoryService, giftListService } from '@/api/article.js'
+const giftCategoryList = async () => {
+  let result = await giftCategoryService()
   categorys.value = result.data
-  console.log(categorys);
+  console.log(categorys)
 }
 
 const giftList = async () => {
   let params = {
     pageNum: pageNum.value,
     pageSize: pageSize.value,
-    categoryId: categoryId.value ,
-    state: state.value 
+    categoryId: categoryId.value,
+    state: state.value,
   }
   let result = await giftListService(params)
 
   //渲染视图 赋值给数据模型
   total.value = result.data.total
-  articles.value = result.data.items
+  gifts.value = result.data.items
 
   //处理数据,给数据模型扩展一个属性categoryName,分类名称
-  for (let i = 0; i < articles.value.length; i++) {
-    let article = articles.value[i]
+  for (let i = 0; i < gifts.value.length; i++) {
+    let gift = gifts.value[i]
     for (let j = 0; j < categorys.value.length; j++) {
-      if (article.categoryId == categorys.value[j].id) {
-        article.categoryName = categorys.value[j].categoryName
+      if (gift.categoryId == categorys.value[j].id) {
+        gift.categoryName = categorys.value[j].categoryName
       }
     }
   }
 }
 //调用
-articleCategoryList()
+giftCategoryList()
 giftList()
 
 //搜索
-const onSearch = async() => {
+const onSearch = async () => {
   giftList()
 }
-
-
 </script>
 <template>
   <el-card class="page-container">
@@ -108,7 +103,11 @@ const onSearch = async() => {
     <!-- 搜索表单 -->
     <el-form inline>
       <el-form-item label="物品分类：">
-        <el-select placeholder="请选择" v-model="categoryId" value-key="categoryName">
+        <el-select
+          placeholder="请选择"
+          v-model="categoryId"
+          value-key="categoryName"
+        >
           <el-option
             v-for="c in categorys"
             :key="c.categoryId"
@@ -130,7 +129,7 @@ const onSearch = async() => {
       </el-form-item>
     </el-form>
     <!-- 文章列表 -->
-    <el-table :data="articles" style="width: 100%">
+    <el-table :data="gifts" style="width: 100%">
       <el-table-column label="物品名称" prop="giftId"></el-table-column>
       <el-table-column label="发布人" prop="userId"></el-table-column>
       <el-table-column label="发表时间" prop="createTime"> </el-table-column>
@@ -180,7 +179,7 @@ const onSearch = async() => {
           ></el-input>
         </el-form-item>
         <el-form-item label="文章分类">
-          <el-select placeholder="请选择" v-model="articleModel.categoryId" >
+          <el-select placeholder="请选择" v-model="articleModel.categoryId">
             <el-option
               v-for="c in categorys"
               :key="c.cId"
@@ -190,7 +189,6 @@ const onSearch = async() => {
             </el-option>
           </el-select>
         </el-form-item>
-        
       </el-form>
     </el-drawer>
   </el-card>
@@ -215,7 +213,6 @@ const onSearch = async() => {
       height: 178px;
       display: block;
     }
-  
 
     .el-upload {
       border: 1px dashed var(--el-border-color);

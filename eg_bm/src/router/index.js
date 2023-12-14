@@ -12,6 +12,7 @@ import UserResetPasswordVue from '@/views/user/UserResetPassword.vue'
 import GiftManageVue from '@/views/gift/GiftManage.vue'
 import StartVue from '@/views/Start.vue'
 import GiftShowVue from '@/views/gift/GiftShow.vue'
+import OrderVue from '@/views/gift/Order.vue'
 
 //定义路由关系
 const routes = [
@@ -21,6 +22,7 @@ const routes = [
             { path:'/start',component:StartVue},
             { path:'/gift',component:GiftManageVue },
             { path:'/gift/detail',component:GiftShowVue},
+            { path:'/gift/order',component:OrderVue},
             // { path: '/article/category', component: ArticleCategoryVue },
             { path: '/article/manage', component: ArticleManageVue },
             { path: '/user/info', component: UserInfoVue },

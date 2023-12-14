@@ -43,6 +43,14 @@ export const giftListAllService = (params)=>{
     return request.get('/gift/detail',{params:params});
 }
 
+export const giftGetService = ()=>{
+    return request.get('/gift/');
+}
+
 export const giftOrderService = (params)=>{
     return request.get('/gift/order',{params:params});
+}
+
+export const giftCategoryService = ()=>{
+    return request.get('/category');
 }

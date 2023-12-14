@@ -117,7 +117,7 @@ const handleCommand = (command) => {
             </el-icon>
             <span>二手物品管理</span>
           </el-menu-item>
-          <el-menu-item>
+          <el-menu-item index="/gift/order">
             <el-icon>
               <Crop />
             </el-icon>
@@ -163,7 +163,7 @@ const handleCommand = (command) => {
             </el-icon>
             <span>个人中心</span>
           </template>
-          <el-menu-item >
+          <el-menu-item>
             <el-icon>
               <User />
             </el-icon>
@@ -195,7 +195,7 @@ const handleCommand = (command) => {
             </el-icon>
             <span>物品类型管理</span>
           </el-menu-item>
-          <el-menu-item >
+          <el-menu-item>
             <el-icon>
               <Crop />
             </el-icon>
