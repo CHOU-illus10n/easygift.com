@@ -84,3 +84,7 @@ export const goodOrderListService = (params)=>{
 export const goodSendService =(OrderData) =>{
     return request.post('/good/order/send',OrderData);
 }
+
+export const getGoodByIdService =()=>{
+    return request.get('/good/getInfo');
+}

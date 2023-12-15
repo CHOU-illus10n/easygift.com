@@ -32,7 +32,8 @@ const getUserInfo = async () => {
   //调用接口
   let result = await userInfoService()
   //数据存储到pinia中
-  // userInfoStore.setInfo(result.data)
+  console.log(result.data)
+  userInfoStore.setInfo(result.data)
 }
 
 getUserInfo()
@@ -155,44 +156,12 @@ const handleCommand = (command) => {
             <span>订单管理</span>
           </el-menu-item>
         </el-sub-menu>
-        <!-- <el-menu-item index="/article/category">
+        <el-menu-item index="/">
           <el-icon>
             <Management />
           </el-icon>
-          <span>文章分类</span>
+          <span>用户管理</span>
         </el-menu-item>
-        <el-menu-item index="/article/manage">
-          <el-icon>
-            <Promotion />
-          </el-icon>
-          <span>文章管理</span>
-        </el-menu-item> -->
-        <el-sub-menu index="4">
-          <template #title>
-            <el-icon>
-              <UserFilled />
-            </el-icon>
-            <span>个人中心</span>
-          </template>
-          <el-menu-item>
-            <el-icon>
-              <User />
-            </el-icon>
-            <span>基本资料</span>
-          </el-menu-item>
-          <el-menu-item index="/user/avatar">
-            <el-icon>
-              <Crop />
-            </el-icon>
-            <span>更换头像</span>
-          </el-menu-item>
-          <el-menu-item index="/user/resetPassword">
-            <el-icon>
-              <EditPen />
-            </el-icon>
-            <span>重置密码</span>
-          </el-menu-item>
-        </el-sub-menu>
         <el-sub-menu index="5">
           <template #title>
             <el-icon><Setting /></el-icon>
@@ -233,9 +202,6 @@ const handleCommand = (command) => {
           </span>
           <template #dropdown>
             <el-dropdown-menu>
-              <el-dropdown-item command="info" :icon="User"
-                >基本资料</el-dropdown-item
-              >
               <el-dropdown-item command="avatar" :icon="Crop"
                 >更换头像</el-dropdown-item
               >

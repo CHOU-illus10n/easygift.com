@@ -4,7 +4,15 @@ import { ref } from 'vue'
 
 //用户搜索时的信息
 const OrderId = ref('')
+//商品模型
+const goodsModel = ref([
+  {
+    goodId: 1,
+    goodName: null,
+  },
+])
 
+//订单模型
 const goodOrders = ref([
   {
     orderId: 1,
@@ -37,35 +45,53 @@ const onCurrentChange = (num) => {
   goodOrderShowList()
 }
 
-//回显文章分类
 import {
-  giftCategoryService,
-  giftListService,
   goodListService,
   goodInfoService,
   goodOrderListService,
   goodSendService,
+  getGoodByIdService,
 } from '@/api/article.js'
 import { ElMessage } from 'element-plus'
-// const giftCategoryList = async () => {
-//   let result = await giftCategoryService()
-//   categorys.value = result.data
-//   console.log(categorys)
-// }
+
+//回显物品名称
+const getGoodById = async () => {
+  let result = await getGoodByIdService()
+  goodsModel.value = result.data
+  console.log(goodsModel)
+}
 //搜索事件绑定
 const onSearch = async () => {
   goodOrderShowList()
 }
-
+//订单发货
 const goodSend = async (row) => {
   if (row.state === -1 || row.state === 5) {
     ElMessage.error('该订单不可发货')
     return
+  } else if (row.state === 4) {
+    ElMessage.error('该订单已发货')
+    return
   }
+
   goodSt.value.orderId = row.orderId
   goodSt.value.state = 4
   console.log(goodSt.value)
   ElMessage.success('发货成功')
+  let result = await goodSendService(goodSt.value)
+  console.log(result)
+  goodOrderShowList()
+}
+
+//订单取消
+const deleteOrder = async (row) => {
+  if (row.state === -1) {
+    ElMessage.error('该订单已取消')
+    return
+  }
+  goodSt.value.orderId = row.orderId
+  goodSt.value.state = -1
+  ElMessage.success('发货已取消')
   let result = await goodSendService(goodSt.value)
   console.log(result)
   goodOrderShowList()
@@ -78,21 +104,20 @@ const goodOrderShowList = async () => {
     orderId: OrderId.value ? OrderId.value : null,
   }
   let result = await goodOrderListService(params)
-  console.log(result)
 
   goodOrders.value = result.data.items
   total.value = result.data.total
-  // 创建一个新的发货地址变量 物品名称变量
-  // for (let i = 0; i < goodOrders.value.length; i++) {
-  //   let goodorder = goodOrders.value[i]
-  //   for (let j = 0; j < categorys.value.length; j++) {
-  //     if (goodorder.goodCategoryId == categorys.value[j].categoryId) {
-  //       goodorder.categoryName = categorys.value[j].categoryName
-  //     }
-  //   }
-  // }
+  //创建一个新的发货地址变量 物品名称变量
+  for (let i = 0; i < goodOrders.value.length; i++) {
+    let goodorder = goodOrders.value[i]
+    for (let j = 0; j < goodsModel.value.length; j++) {
+      if (goodorder.goodId == goodsModel.value[j].goodId) {
+        goodorder.goodName = goodsModel.value[j].goodName
+      }
+    }
+  }
 }
-// giftCategoryList()
+getGoodById()
 goodOrderShowList()
 </script>
 <template>
@@ -133,7 +158,7 @@ goodOrderShowList()
           <el-button circle plain type="primary" @click="goodSend(row)"
             >发货</el-button
           >
-          <el-button circle plain type="danger" @click="deleteCategory(row)"
+          <el-button circle plain type="danger" @click="deleteOrder(row)"
             >取消</el-button
           >
         </template>
