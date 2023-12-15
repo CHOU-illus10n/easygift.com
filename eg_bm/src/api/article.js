@@ -76,3 +76,11 @@ export const goodListService = (params)=>{
 export const goodInfoService = (name)=>{
     return request.get('/good?goodName='+name);
 }
+
+export const goodOrderListService = (params)=>{
+    return request.get('/good/order',{params:params});
+}
+
+export const goodSendService =(OrderData) =>{
+    return request.post('/good/order/send',OrderData);
+}

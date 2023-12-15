@@ -1,7 +1,7 @@
 <script setup>
 import { Edit, Delete } from '@element-plus/icons-vue'
 import { ref } from 'vue'
-
+import { ElMessage } from 'element-plus'
 //用户搜索时的信息
 const gName = ref('')
 

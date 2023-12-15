@@ -32,7 +32,7 @@ const getUserInfo = async () => {
   //调用接口
   let result = await userInfoService()
   //数据存储到pinia中
-  userInfoStore.setInfo(result.data)
+  // userInfoStore.setInfo(result.data)
 }
 
 getUserInfo()

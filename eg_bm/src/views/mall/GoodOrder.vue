@@ -1,39 +1,27 @@
 <script setup>
-import { Edit, Delete } from '@element-plus/icons-vue'
+import { Edit, Delete, Upload } from '@element-plus/icons-vue'
 import { ref } from 'vue'
 
 //用户搜索时的信息
 const OrderId = ref('')
 
-//文章分类数据模型
-const categorys = ref([
+const goodOrders = ref([
   {
-    categoryId: 3,
-    categoryName: '',
-    createTime: '2023-09-02 12:06:59',
-    updateTime: '2023-09-02 12:06:59',
-  },
-  {
-    categoryId: 4,
-    categoryName: '美食',
-    createTime: '2023-09-02 12:06:59',
-    updateTime: '2023-09-02 12:06:59',
-  },
-])
-const goods = ref([
-  {
+    orderId: 1,
+    state: 3,
+    receiverId: 1,
     goodId: 1,
-    goodCategoryId: 1,
-    goodImg: null,
-    goodName: null,
-    goodPoint: 0,
-    goodDesc: null,
-    goodCount: 0,
-    createTime: '2023-12-14T13:11:37.000+00:00',
-    updateTime: '2023-12-14T13:11:37.000+00:00',
+    shoppingId: 1,
+    payment: 11.0,
+    sendTime: null,
+    endTime: null,
+    createTime: '2023-12-15T10:21:38',
+    updateTime: '2023-12-15T10:22:19',
     isDeleted: 0,
   },
 ])
+
+const goodSt = ref({ orderId: '1', state: '4' })
 
 const pageNum = ref(1) //当前页
 const total = ref(20) //总条数
@@ -41,12 +29,12 @@ const pageSize = ref(4) //每页条数
 //当每页条数发生了变化，调用此函数
 const onSizeChange = (size) => {
   pageSize.value = size
-  goodShowList()
+  goodOrderShowList()
 }
 //当前页码发生变化，调用此函数
 const onCurrentChange = (num) => {
   pageNum.value = num
-  goodShowList()
+  goodOrderShowList()
 }
 
 //回显文章分类
@@ -55,41 +43,57 @@ import {
   giftListService,
   goodListService,
   goodInfoService,
+  goodOrderListService,
+  goodSendService,
 } from '@/api/article.js'
-const giftCategoryList = async () => {
-  let result = await giftCategoryService()
-  categorys.value = result.data
-  console.log(categorys)
-}
+import { ElMessage } from 'element-plus'
+// const giftCategoryList = async () => {
+//   let result = await giftCategoryService()
+//   categorys.value = result.data
+//   console.log(categorys)
+// }
 //搜索事件绑定
 const onSearch = async () => {
-  goodShowList()
+  goodOrderShowList()
 }
 
-const goodShowList = async () => {
+const goodSend = async (row) => {
+  if (row.state === -1 || row.state === 5) {
+    ElMessage.error('该订单不可发货')
+    return
+  }
+  goodSt.value.orderId = row.orderId
+  goodSt.value.state = 4
+  console.log(goodSt.value)
+  ElMessage.success('发货成功')
+  let result = await goodSendService(goodSt.value)
+  console.log(result)
+  goodOrderShowList()
+}
+
+const goodOrderShowList = async () => {
   let params = {
     pageNum: pageNum.value,
     pageSize: pageSize.value,
-    goodName: gName.value ? gName.value : null,
+    orderId: OrderId.value ? OrderId.value : null,
   }
-  let result = await goodListService(params)
+  let result = await goodOrderListService(params)
   console.log(result)
 
-  goods.value = result.data.items
+  goodOrders.value = result.data.items
   total.value = result.data.total
-
-  for (let i = 0; i < goods.value.length; i++) {
-    let good = goods.value[i]
-    for (let j = 0; j < categorys.value.length; j++) {
-      if (good.goodCategoryId == categorys.value[j].categoryId) {
-        good.categoryName = categorys.value[j].categoryName
-        console.log(goods.categoryName)
-      }
-    }
-  }
+  // 创建一个新的发货地址变量 物品名称变量
+  // for (let i = 0; i < goodOrders.value.length; i++) {
+  //   let goodorder = goodOrders.value[i]
+  //   for (let j = 0; j < categorys.value.length; j++) {
+  //     if (goodorder.goodCategoryId == categorys.value[j].categoryId) {
+  //       goodorder.categoryName = categorys.value[j].categoryName
+  //     }
+  //   }
+  // }
 }
-giftCategoryList()
-goodShowList()
+// giftCategoryList()
+goodOrderShowList()
 </script>
 <template>
   <el-card class="page-container">
@@ -107,42 +111,31 @@ goodShowList()
         <el-button @click="OrderId = ''">重置</el-button>
       </el-form-item>
     </el-form>
-    <el-table :data="goods" style="width: 100%">
+    <el-table :data="goodOrders" style="width: 100%">
       <el-table-column label="序号" width="100" type="index"> </el-table-column>
-      <el-table-column label="商品id" prop="goodId"></el-table-column>
+      <el-table-column label="订单id" prop="orderId"></el-table-column>
       <el-table-column label="商品名称" prop="goodName"></el-table-column>
-      <el-table-column label="分类名称" prop="categoryName"></el-table-column>
-      <el-table-column label="图片">
-        <template v-slot="{ row }">
-          <el-image
-            style="width: 30px; height: 30px"
-            :src="row.goodImg"
-            :preview-src-list="[row.goodImg]"
-            :key="row.goodId"
-          >
-            <div slot="error" class="image-slot">
-              <i class="el-icon-picture-outline"></i>
-            </div>
-          </el-image> </template
-      ></el-table-column>
-      <el-table-column label="所需积分" prop="goodPoint"></el-table-column>
-      <el-table-column label="所剩数量" prop="goodCount"></el-table-column>
+      <el-table-column label="消耗积分" prop="payment"></el-table-column>
+      <el-table-column label="发货时间" prop="sendTime"></el-table-column>
+      <el-table-column label="结束时间" prop="endTime"></el-table-column>
+      <el-table-column label="订单状态" prop="state"
+        ><template v-slot="{ row }">
+          <span>
+            {{ row.state == 3 ? '待发货' : '' }}
+            {{ row.state == 4 ? '已发货' : '' }}
+            {{ row.state == 5 ? '已完成' : '' }}
+            {{ row.state == -1 ? '已取消' : '' }}
+          </span>
+        </template></el-table-column
+      >
       <el-table-column label="操作" width="100">
         <template #default="{ row }">
-          <el-button
-            :icon="Edit"
-            circle
-            plain
-            type="primary"
-            @click="showDialog(row)"
-          ></el-button>
-          <el-button
-            :icon="Delete"
-            circle
-            plain
-            type="danger"
-            @click="deleteCategory(row)"
-          ></el-button>
+          <el-button circle plain type="primary" @click="goodSend(row)"
+            >发货</el-button
+          >
+          <el-button circle plain type="danger" @click="deleteCategory(row)"
+            >取消</el-button
+          >
         </template>
       </el-table-column>
       <template #empty>
