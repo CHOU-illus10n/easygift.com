@@ -88,3 +88,11 @@ export const goodSendService =(OrderData) =>{
 export const getGoodByIdService =()=>{
     return request.get('/good/getInfo');
 }
+
+export const goodAddService =(params) =>{
+    return request.post('/good',params);
+}
+
+export const deleteGoodService =(id) =>{
+    return request.delete('/good?id='+id);
+}

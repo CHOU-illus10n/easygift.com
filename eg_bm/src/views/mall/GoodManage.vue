@@ -35,20 +35,18 @@ const goods = ref([
     isDeleted: 0,
   },
 ])
-const goodsModel = ref([
-  {
-    goodId: '',
-    goodCategoryId: 1,
-    goodImg: null,
-    goodName: null,
-    goodPoint: 0,
-    goodDesc: null,
-    goodCount: 0,
-    createTime: '',
-    updateTime: '',
-    isDeleted: 0,
-  },
-])
+const goodsModel = ref({
+  goodId: '',
+  goodCategoryId: '',
+  goodImg: '',
+  goodName: '',
+  goodPoint: '',
+  goodDesc: '',
+  goodCount: '',
+  createTime: '',
+  updateTime: '',
+  isDeleted: '',
+})
 
 const pageNum = ref(1) //当前页
 const total = ref(20) //总条数
@@ -67,9 +65,10 @@ const onCurrentChange = (num) => {
 //回显文章分类
 import {
   giftCategoryService,
-  giftListService,
   goodListService,
   goodInfoService,
+  goodAddService,
+  deleteGoodService,
 } from '@/api/article.js'
 const giftCategoryList = async () => {
   let result = await giftCategoryService()
@@ -105,29 +104,32 @@ const goodShowList = async () => {
 giftCategoryList()
 goodShowList()
 
-//图片上传成功的回调函数
-const uploadSuccess = (result) => {
-  console.log(result.data)
-  imgUrl.value = result.data
-}
 //图片修改
 const updateGoodPic = async (result) => {
   let params = goodsModel.value
   let img = result.data
   console.log(img)
-  params.goodImg = img
+  goodsModel.value.goodImg = img
   //调用接口
   console.log(params)
   ElMessage.success('上传成功')
 }
 
 const add = async () => {
-  let params = goodsModel
+  let params = goodsModel.value
+  console.log(goodsModel.value)
   let result = await goodAddService(params)
   console.log(result)
   ElMessage.success(result.msg ? result.msg : '添加成功')
   goodShowList()
   visibleDrawer.value = false
+}
+
+//删除
+const deleteGood = async (row) => {
+  let result = await deleteGoodService(row.goodId)
+  ElMessage.success(result.msg ? result.msg : '删除成功')
+  goodShowList()
 }
 </script>
 <template>
@@ -185,7 +187,7 @@ const add = async () => {
             circle
             plain
             type="danger"
-            @click="deleteCategory(row)"
+            @click="deleteGood(row)"
           ></el-button>
         </template>
       </el-table-column>
@@ -255,7 +257,7 @@ const add = async () => {
         <el-form-item label="商品分类：">
           <el-select
             placeholder="请选择"
-            v-model="categoryId"
+            v-model="goodsModel.goodCategoryId"
             value-key="categoryName"
             ><el-option
               v-for="c in categorys"
@@ -275,7 +277,7 @@ const add = async () => {
         <el-form-item label="商品数量">
           <el-input
             placeholder=" 请输入商品数量"
-            v-model="goodsModel.goodPoint"
+            v-model="goodsModel.goodCount"
           ></el-input>
         </el-form-item>
         <el-form-item label="商品描述">
