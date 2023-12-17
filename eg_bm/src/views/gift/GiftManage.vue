@@ -14,7 +14,7 @@ import {
   giftImgsService,
   giftChangeStService,
 } from '@/api/article.js'
-//文章分类数据模型
+//商品分类数据模型
 const categorys = ref([
   {
     categoryId: 3,

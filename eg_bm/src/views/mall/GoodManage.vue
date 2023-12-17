@@ -1,21 +1,22 @@
 <script setup>
 import { Edit, Delete } from '@element-plus/icons-vue'
 import { ref } from 'vue'
+import { Plus, Upload } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import { ElButton, ElDrawer } from 'element-plus'
+import { useTokenStore } from '@/stores/token.js'
 //用户搜索时的信息
 const gName = ref('')
+//控制抽屉是否显示
+const visibleDrawer = ref(false)
+const imgUrl = ref()
+const tokenStore = useTokenStore()
 
-//文章分类数据模型
+//商品分类数据模型
 const categorys = ref([
   {
     categoryId: 3,
     categoryName: '',
-    createTime: '2023-09-02 12:06:59',
-    updateTime: '2023-09-02 12:06:59',
-  },
-  {
-    categoryId: 4,
-    categoryName: '美食',
     createTime: '2023-09-02 12:06:59',
     updateTime: '2023-09-02 12:06:59',
   },
@@ -31,6 +32,20 @@ const goods = ref([
     goodCount: 0,
     createTime: '2023-12-14T13:11:37.000+00:00',
     updateTime: '2023-12-14T13:11:37.000+00:00',
+    isDeleted: 0,
+  },
+])
+const goodsModel = ref([
+  {
+    goodId: '',
+    goodCategoryId: 1,
+    goodImg: null,
+    goodName: null,
+    goodPoint: 0,
+    goodDesc: null,
+    goodCount: 0,
+    createTime: '',
+    updateTime: '',
     isDeleted: 0,
   },
 ])
@@ -89,12 +104,42 @@ const goodShowList = async () => {
 }
 giftCategoryList()
 goodShowList()
+
+//图片上传成功的回调函数
+const uploadSuccess = (result) => {
+  console.log(result.data)
+  imgUrl.value = result.data
+}
+//图片修改
+const updateGoodPic = async (result) => {
+  let params = goodsModel.value
+  let img = result.data
+  console.log(img)
+  params.goodImg = img
+  //调用接口
+  console.log(params)
+  ElMessage.success('上传成功')
+}
+
+const add = async () => {
+  let params = goodsModel
+  let result = await goodAddService(params)
+  console.log(result)
+  ElMessage.success(result.msg ? result.msg : '添加成功')
+  goodShowList()
+  visibleDrawer.value = false
+}
 </script>
 <template>
   <el-card class="page-container">
     <template #header>
       <div class="header">
         <span>积分商品管理</span>
+        <div class="extra">
+          <el-button type="primary" @click="visibleDrawer = true"
+            >添加商品</el-button
+          >
+        </div>
       </div>
     </template>
     <el-form inline>
@@ -198,6 +243,148 @@ goodShowList()
         </span>
       </template>
     </el-dialog>
+    <!-- 抽屉 -->
+    <el-drawer v-model="visibleDrawer" direction="rtl" size="70%">
+      <el-form :model="goodsModel" label-width="100px">
+        <el-form-item label="商品名称">
+          <el-input
+            placeholder=" 请输入商品名称"
+            v-model="goodsModel.goodName"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="商品分类：">
+          <el-select
+            placeholder="请选择"
+            v-model="categoryId"
+            value-key="categoryName"
+            ><el-option
+              v-for="c in categorys"
+              :key="c.categoryId"
+              :label="c.categoryName"
+              :value="c.categoryId"
+            >
+            </el-option
+          ></el-select>
+        </el-form-item>
+        <el-form-item label="所需积分">
+          <el-input
+            placeholder=" 请输入所需积分"
+            v-model="goodsModel.goodPoint"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="商品数量">
+          <el-input
+            placeholder=" 请输入商品数量"
+            v-model="goodsModel.goodPoint"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="商品描述">
+          <el-input
+            autosize
+            type="textarea"
+            placeholder="请输入商品描述"
+            v-model="goodsModel.goodDesc"
+          ></el-input>
+        </el-form-item>
+        <!-- <el-form-item label="商品图片">
+          <el-col :span="12">
+            <el-upload
+              class="upload-demo"
+              drag
+              action="/api/upload"
+              multiple
+              name="file"
+              :headers="{ Authorization: tokenStore.token }"
+            >
+              <i class="el-icon-upload"></i>
+              <div class="el-upload__text">
+                将图片拖到此处，或<em>点击上传</em>
+              </div>
+            </el-upload>
+            <el-button
+              type="success"
+              :icon="Upload"
+              size="large"
+              @click="updateGoodPic"
+            >
+              上传头像
+            </el-button>
+          </el-col>
+        </el-form-item> -->
+        <el-form-item label="文章封面">
+          <!-- 
+    auto-upload:设置是否自动上传
+    action:设置服务器接口路径
+    name:设置上传的文件字段名
+    headers:设置上传的请求头
+    on-success:设置上传成功的回调函数
+ -->
+
+          <el-upload
+            class="goodImg-uploader"
+            :auto-upload="true"
+            :show-file-list="false"
+            action="/api/upload"
+            name="file"
+            :headers="{ Authorization: tokenStore.token }"
+            :on-success="updateGoodPic"
+          >
+            <img
+              v-if="goodsModel.goodImg"
+              :src="goodsModel.goodImg"
+              class="goodImg"
+            />
+            <el-icon v-else class="avatar-uploader-icon">
+              <Plus />
+            </el-icon>
+          </el-upload>
+        </el-form-item>
+        <el-form-item>
+          <div style="width: 80%; text-align: center">
+            <el-button type="primary" @click="add()">添加</el-button>
+          </div>
+        </el-form-item>
+      </el-form>
+      <!-- <el-form :model="giftsModel" label-width="100px">
+        <el-form-item label="物品名称">
+          <el-input
+            disabled
+            placeholder=" "
+            v-model="giftsModel.giftName"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="物品描述">
+          <el-input
+            autosize
+            type="textarea"
+            disabled
+            placeholder=" "
+            v-model="giftsModel.description"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="物品图片"> </el-form-item>
+        <div class="block text-center" m="t-4">
+          <el-carousel trigger="click" height="300px">
+            <el-carousel-item v-for="url in urls" :key="url">
+              <el-image
+                :src="url.giftImgUrl"
+                style="width: 100%; height: 100%"
+                :fit="contain"
+              />
+            </el-carousel-item>
+          </el-carousel>
+        </div>
+        <h1></h1>
+        <el-form-item>
+          <div style="width: 80%; text-align: center">
+            <el-button type="primary" @click="pass()">通过</el-button
+            ><el-button type="info" @click="addArticle('草稿')"
+              >不通过</el-button
+            >
+          </div>
+        </el-form-item>
+      </el-form> -->
+    </el-drawer>
     <!-- 分页条 -->
     <el-pagination
       v-model:current-page="pageNum"
@@ -223,5 +410,28 @@ goodShowList()
     align-items: center;
     justify-content: space-between;
   }
+}
+.avatar-uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+  border-color: #409eff;
+}
+.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 178px;
+  height: 178px;
+  line-height: 178px;
+  text-align: center;
+}
+.avatar {
+  width: 178px;
+  height: 178px;
+  display: block;
 }
 </style>
