@@ -72,7 +72,7 @@ export const giftChangeStService =(id)=>{
 export const goodListService = (params)=>{
     return request.get('/good',{params:params});
 }
-//根据id查询信息
+//根据物品名查询信息
 export const goodInfoService = (name)=>{
     return request.get('/good?goodName='+name);
 }
@@ -85,8 +85,8 @@ export const goodSendService =(OrderData) =>{
     return request.post('/good/order/send',OrderData);
 }
 
-export const getGoodByIdService =()=>{
-    return request.get('/good/getInfo');
+export const getGoodByIdService =(id)=>{
+    return request.get('/good/getInfo?id='+id);
 }
 
 export const goodAddService =(params) =>{
@@ -95,4 +95,12 @@ export const goodAddService =(params) =>{
 
 export const deleteGoodService =(id) =>{
     return request.delete('/good?id='+id);
+}
+
+export const goodGetOneService = (id)=>{
+    return request.get('/good/getOne?id='+id);
+}
+
+export const goodUpdateService = (params)=>{
+    return request.post('/good/update',params);
 }

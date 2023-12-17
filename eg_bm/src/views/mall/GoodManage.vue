@@ -9,7 +9,8 @@ import { useTokenStore } from '@/stores/token.js'
 const gName = ref('')
 //控制抽屉是否显示
 const visibleDrawer = ref(false)
-const imgUrl = ref()
+const visibleDrawer2 = ref(false)
+// const imgUrl = ref()
 const tokenStore = useTokenStore()
 
 //商品分类数据模型
@@ -69,6 +70,9 @@ import {
   goodInfoService,
   goodAddService,
   deleteGoodService,
+  getGoodByIdService,
+  goodGetOneService,
+  goodUpdateService,
 } from '@/api/article.js'
 const giftCategoryList = async () => {
   let result = await giftCategoryService()
@@ -123,6 +127,7 @@ const add = async () => {
   ElMessage.success(result.msg ? result.msg : '添加成功')
   goodShowList()
   visibleDrawer.value = false
+  clearModel()
 }
 
 //删除
@@ -131,6 +136,50 @@ const deleteGood = async (row) => {
   ElMessage.success(result.msg ? result.msg : '删除成功')
   goodShowList()
 }
+
+const clearModel = () => {
+  goodsModel.value = {
+    goodId: '',
+    goodCategoryId: '',
+    goodImg: '',
+    goodName: '',
+    goodPoint: '',
+    goodDesc: '',
+    goodCount: '',
+    createTime: '',
+    updateTime: '',
+    isDeleted: '',
+  }
+}
+
+const goodListOne = async (params) => {
+  let result = await goodGetOneService(params)
+  goodsModel.value = result.data
+  console.log(goodsModel)
+}
+
+//打开修改抽屉
+const open = (row) => {
+  visibleDrawer2.value = true
+  let params = row.goodId
+  goodsModel.value = goodListOne(params)
+  goodsModel.value.goodId = params
+  console.log(goodsModel)
+}
+const goodUpdate = async (params) => {
+  let result = await goodUpdateService(params)
+  console.log(result)
+}
+
+const update = () => {
+  visibleDrawer2.value = false
+  let params = goodsModel.value
+  let result = goodUpdate(params)
+  console.log(result)
+  ElMessage.success('修改成功')
+  goodShowList()
+  clearModel()
+}
 </script>
 <template>
   <el-card class="page-container">
@@ -138,7 +187,9 @@ const deleteGood = async (row) => {
       <div class="header">
         <span>积分商品管理</span>
         <div class="extra">
-          <el-button type="primary" @click="visibleDrawer = true"
+          <el-button
+            type="primary"
+            @click="clearModel(), (visibleDrawer = true)"
             >添加商品</el-button
           >
         </div>
@@ -180,7 +231,7 @@ const deleteGood = async (row) => {
             circle
             plain
             type="primary"
-            @click="showDialog(row)"
+            @click="clearModel(), open(row)"
           ></el-button>
           <el-button
             :icon="Delete"
@@ -196,55 +247,6 @@ const deleteGood = async (row) => {
       </template>
     </el-table>
 
-    <!-- 添加分类弹窗 -->
-    <el-dialog v-model="dialogVisible" :title="title" width="30%">
-      <el-form
-        :model="categoryModel"
-        :rules="rules"
-        label-width="100px"
-        style="padding-right: 30px"
-      >
-        <el-form-item label="物品名称" prop="categoryName">
-          <el-input
-            v-model="categoryModel.categoryName"
-            minlength="1"
-            maxlength="10"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="分类别名" prop="categoryAlias">
-          <el-input
-            v-model="categoryModel.categoryAlias"
-            minlength="1"
-            maxlength="15"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="分类别名" prop="categoryAlias">
-          <el-input
-            v-model="categoryModel.categoryAlias"
-            minlength="1"
-            maxlength="15"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="分类别名" prop="categoryAlias">
-          <el-input
-            v-model="categoryModel.categoryAlias"
-            minlength="1"
-            maxlength="15"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <span class="dialog-footer">
-          <el-button @click="dialogVisible = false">取消</el-button>
-          <el-button
-            type="primary"
-            @click="title == '添加分类' ? addCategory() : updateCategory()"
-          >
-            确认
-          </el-button>
-        </span>
-      </template>
-    </el-dialog>
     <!-- 抽屉 -->
     <el-drawer v-model="visibleDrawer" direction="rtl" size="70%">
       <el-form :model="goodsModel" label-width="100px">
@@ -288,31 +290,6 @@ const deleteGood = async (row) => {
             v-model="goodsModel.goodDesc"
           ></el-input>
         </el-form-item>
-        <!-- <el-form-item label="商品图片">
-          <el-col :span="12">
-            <el-upload
-              class="upload-demo"
-              drag
-              action="/api/upload"
-              multiple
-              name="file"
-              :headers="{ Authorization: tokenStore.token }"
-            >
-              <i class="el-icon-upload"></i>
-              <div class="el-upload__text">
-                将图片拖到此处，或<em>点击上传</em>
-              </div>
-            </el-upload>
-            <el-button
-              type="success"
-              :icon="Upload"
-              size="large"
-              @click="updateGoodPic"
-            >
-              上传头像
-            </el-button>
-          </el-col>
-        </el-form-item> -->
         <el-form-item label="文章封面">
           <!-- 
     auto-upload:设置是否自动上传
@@ -347,45 +324,74 @@ const deleteGood = async (row) => {
           </div>
         </el-form-item>
       </el-form>
-      <!-- <el-form :model="giftsModel" label-width="100px">
+    </el-drawer>
+
+    <!-- 修改抽屉 -->
+    <el-drawer v-model="visibleDrawer2" direction="rtl" size="70%">
+      <el-form :model="goodsModel" label-width="100px">
         <el-form-item label="物品名称">
+          <el-input v-model="goodsModel.goodName"></el-input>
+        </el-form-item>
+        <el-form-item label="商品分类：">
+          <el-select
+            placeholder="请选择"
+            v-model="goodsModel.goodCategoryId"
+            value-key="categoryName"
+            ><el-option
+              v-for="c in categorys"
+              :key="c.categoryId"
+              :label="c.categoryName"
+              :value="c.categoryId"
+            >
+            </el-option
+          ></el-select>
+        </el-form-item>
+        <el-form-item label="所需积分">
           <el-input
-            disabled
-            placeholder=" "
-            v-model="giftsModel.giftName"
+            placeholder=" 请输入所需积分"
+            v-model="goodsModel.goodPoint"
           ></el-input>
         </el-form-item>
-        <el-form-item label="物品描述">
+        <el-form-item label="商品数量">
+          <el-input
+            placeholder=" 请输入商品数量"
+            v-model="goodsModel.goodCount"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="商品描述">
           <el-input
             autosize
             type="textarea"
-            disabled
-            placeholder=" "
-            v-model="giftsModel.description"
+            placeholder="请输入商品描述"
+            v-model="goodsModel.goodDesc"
           ></el-input>
         </el-form-item>
-        <el-form-item label="物品图片"> </el-form-item>
-        <div class="block text-center" m="t-4">
-          <el-carousel trigger="click" height="300px">
-            <el-carousel-item v-for="url in urls" :key="url">
-              <el-image
-                :src="url.giftImgUrl"
-                style="width: 100%; height: 100%"
-                :fit="contain"
-              />
-            </el-carousel-item>
-          </el-carousel>
-        </div>
-        <h1></h1>
+        <el-form-item label="文章封面">
+          <el-upload
+            class="goodImg-uploader"
+            :auto-upload="true"
+            :show-file-list="false"
+            action="/api/upload"
+            name="file"
+            :headers="{ Authorization: tokenStore.token }"
+            :on-success="updateGoodPic"
+          >
+            <img
+              v-if="goodsModel.goodImg"
+              :src="goodsModel.goodImg"
+              class="goodImg"
+            />
+            <el-icon v-else class="avatar-uploader-icon">
+              <Plus />
+            </el-icon>
+          </el-upload>
+        </el-form-item>
         <el-form-item>
           <div style="width: 80%; text-align: center">
-            <el-button type="primary" @click="pass()">通过</el-button
-            ><el-button type="info" @click="addArticle('草稿')"
-              >不通过</el-button
-            >
+            <el-button type="primary" @click="update()">修改</el-button>
           </div>
         </el-form-item>
-      </el-form> -->
+      </el-form>
     </el-drawer>
     <!-- 分页条 -->
     <el-pagination
