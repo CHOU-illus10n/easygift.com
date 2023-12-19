@@ -27,17 +27,18 @@ import useUserInfoStore from '@/stores/userInfo.js'
 import { useTokenStore } from '@/stores/token.js'
 const tokenStore = useTokenStore()
 const userInfoStore = useUserInfoStore()
-//调用函数,获取用户详细信息
+//调用函数, 获取用户详细信息
 const getUserInfo = async () => {
   //调用接口
   let result = await userInfoService()
   //数据存储到pinia中
   console.log(result.data)
   userInfoStore.setInfo(result.data)
+  console.log(userInfoStore.info)
 }
 
 getUserInfo()
-//条目被点击后,调用的函数
+//条目被点击后, 调用的函数
 import { useRouter } from 'vue-router'
 const router = useRouter()
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -156,9 +157,9 @@ const handleCommand = (command) => {
             <span>订单管理</span>
           </el-menu-item>
         </el-sub-menu>
-        <el-menu-item index="/">
+        <el-menu-item index="/user">
           <el-icon>
-            <Management />
+            <User />
           </el-icon>
           <span>用户管理</span>
         </el-menu-item>

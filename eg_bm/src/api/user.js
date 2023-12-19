@@ -17,7 +17,7 @@ export const userLoginService = (loginData)=>{
     for(let key in loginData){
         params.append(key,loginData[key])
     }
-    return request.post('/user/login',params)
+    return request.post('/login',params)
 }
 
 
@@ -41,5 +41,17 @@ export const userInfoUpdateService = (userInfoData)=>{
 export const userAvatarUpdateService = (params)=>{
     // const params = new URLSearchParams();
     // params.append('avatarUrl',avatarUrl)
-    return request.patch('/updateAvatar',{params:params})
+    return request.patch('/updateAvatar',params)
+}
+
+export const userListService = (params)=>{
+    return request.get('/user',{params:params})
+}
+
+export const userGetOneService = (nickName)=>{
+    return request.get('/user/getOne?nickName='+nickName)
+}
+
+export const deleteUserService = (id)=>{
+    return request.delete('/user/delete?id='+id)
 }

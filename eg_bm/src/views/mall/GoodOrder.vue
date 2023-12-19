@@ -56,7 +56,7 @@ import { ElMessage } from 'element-plus'
 
 //回显物品名称
 const getGoodById = async () => {
-  let result = await getGoodByIdService()
+  let result = await getGoodByIdService(1)
   goodsModel.value = result.data
   console.log(goodsModel)
 }
@@ -85,8 +85,8 @@ const goodSend = async (row) => {
 
 //订单取消
 const deleteOrder = async (row) => {
-  if (row.state === -1) {
-    ElMessage.error('该订单已取消')
+  if (row.state === -1 || row.state === 5) {
+    ElMessage.error('该订单不可取消')
     return
   }
   goodSt.value.orderId = row.orderId

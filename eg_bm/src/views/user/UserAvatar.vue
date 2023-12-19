@@ -22,8 +22,10 @@ import { ElMessage } from 'element-plus'
 //头像修改
 const updateAvatar = async () => {
   let params = userInfoStore.info
+  console.log(userInfoStore.info)
   let img = imgUrl.value
   params.userPic = img
+  console.log(params)
   let result = await userAvatarUpdateService(params)
   //调用接口
   console.log(result)
