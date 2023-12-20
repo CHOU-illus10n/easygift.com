@@ -55,6 +55,10 @@ export const giftCategoryService = ()=>{
     return request.get('/category');
 }
 
+export const CategoryListService = (params)=>{
+    return request.get('/category/info',{params:params});
+}
+
 export const giftInfoService = (id)=>{
     return request.get('/gift/one?id='+id);
 }

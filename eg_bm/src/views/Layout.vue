@@ -97,26 +97,14 @@ const handleCommand = (command) => {
           </el-icon>
           <span>易赠后台</span>
         </el-menu-item>
-        <el-sub-menu index="1">
-          <template #title>
-            <el-icon>
-              <FolderChecked />
-            </el-icon>
-            <span>审核管理</span>
-          </template>
-          <el-menu-item index="/gift">
-            <el-icon>
-              <DocumentChecked />
-            </el-icon>
-            <span>物品审核</span>
-          </el-menu-item>
-          <el-menu-item>
-            <el-icon>
-              <Document />
-            </el-icon>
-            <span>审核日志</span>
-          </el-menu-item>
-        </el-sub-menu>
+
+        <el-menu-item index="/gift">
+          <el-icon>
+            <DocumentChecked />
+          </el-icon>
+          <span>物品审核</span>
+        </el-menu-item>
+
         <el-sub-menu index="2">
           <template #title>
             <el-icon>
@@ -168,7 +156,7 @@ const handleCommand = (command) => {
             <el-icon><Setting /></el-icon>
             <span>基本管理</span>
           </template>
-          <el-menu-item index="/user/info">
+          <el-menu-item index="/category">
             <el-icon>
               <Files />
             </el-icon>

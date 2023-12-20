@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import useUserInfoStore from '@/stores/userInfo.js'
 
-const psd = ref({})
+const psd = ref('')
 const userInfoStore = useUserInfoStore()
 
 const userInfo = ref({ ...userInfoStore.info })
@@ -25,6 +25,8 @@ const rules = {
 import { userInfoUpdateService } from '@/api/user.js'
 import { ElMessage } from 'element-plus'
 const updateUserInfo = async () => {
+  console.log(psd.value)
+  userInfo.value.psd = psd.value
   //调用接口
   let result = await userInfoUpdateService(userInfo.value)
   ElMessage.success(result.msg ? result.msg : '修改成功')
@@ -56,7 +58,11 @@ const updateUserInfo = async () => {
             ></el-input>
           </el-form-item>
           <el-form-item label="用户密码" prop="psd">
-            <el-input v-model="userInfo.password" type="password"></el-input>
+            <el-input
+              v-model="psd"
+              type="password"
+              placeholder="请输入密码"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="updateUserInfo"
