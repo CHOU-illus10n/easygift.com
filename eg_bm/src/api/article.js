@@ -9,18 +9,22 @@ export const articleCategoryListService = ()=>{
 }
 
 //文章分类添加
-export const articleCategoryAddService = (categoryData)=>{
+export const categoryAddService = (categoryData)=>{
     return request.post('/category',categoryData)
 }
 
 //文章分类修改
-export const articleCategoryUpdateService = (categoryData)=>{
+export const CategoryUpdateService = (categoryData)=>{
    return  request.put('/category',categoryData)
 }
 
 //文章分类删除
-export const articleCategoryDeleteService = (id)=>{
+export const CategoryDeleteService = (id)=>{
     return request.delete('/category?id='+id)
+}
+
+export const CategoryDetailService = (id)=>{
+    return request.get('/category/detail?id='+id)
 }
 
 //文章列表查询

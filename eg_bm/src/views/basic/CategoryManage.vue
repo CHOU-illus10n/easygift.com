@@ -23,6 +23,13 @@ const categorys = ref([
   },
 ])
 
+const categoryModel = ref({
+  categoryId: '',
+  categoryName: '',
+  createTime: '2023-09-02 12:06:59',
+  updateTime: '2023-09-02 12:06:59',
+})
+
 const pageNum = ref(1) //当前页
 const total = ref(20) //总条数
 const pageSize = ref(4) //每页条数
@@ -48,6 +55,10 @@ import {
   goodGetOneService,
   goodUpdateService,
   CategoryListService,
+  categoryAddService,
+  CategoryDeleteService,
+  CategoryUpdateService,
+  CategoryDetailService,
 } from '@/api/article.js'
 const giftCategoryList = async () => {
   let params = {
@@ -64,86 +75,60 @@ const giftCategoryList = async () => {
 const onSearch = async () => {
   giftCategoryList()
 }
-
-const goodShowList = async () => {
-  let params = {
-    pageNum: pageNum.value,
-    pageSize: pageSize.value,
-    goodName: gName.value ? gName.value : null,
-  }
-  let result = await goodListService(params)
-  console.log(result)
-  goods.value = result.data.items
-  total.value = result.data.total
-
-  for (let i = 0; i < goods.value.length; i++) {
-    let good = goods.value[i]
-    for (let j = 0; j < categorys.value.length; j++) {
-      if (good.goodCategoryId == categorys.value[j].categoryId) {
-        good.categoryName = categorys.value[j].categoryName
-        console.log(goods.categoryName)
-      }
-    }
-  }
-}
 giftCategoryList()
-//goodShowList()
-
-//图片修改
-const updateGoodPic = async (result) => {
-  let params = goodsModel.value
-  let img = result.data
-  console.log(img)
-  goodsModel.value.goodImg = img
-  //调用接口
-  console.log(params)
-  ElMessage.success('上传成功')
-}
 
 const add = async () => {
-  let params = goodsModel.value
-  console.log(goodsModel.value)
-  let result = await goodAddService(params)
+  let params = categoryModel.value
+  console.log(categoryModel.value)
+  let result = await categoryAddService(params)
   console.log(result)
   ElMessage.success(result.msg ? result.msg : '添加成功')
-  goodShowList()
+  giftCategoryList()
   visibleDrawer.value = false
   clearModel()
 }
 
-//删除
-const deleteGood = async (row) => {
-  let result = await deleteGoodService(row.goodId)
-  ElMessage.success(result.msg ? result.msg : '删除成功')
-  goodShowList()
+const clearModel = () => {
+  categoryModel.value = {
+    categoryId: '',
+    categoryName: '',
+    createTime: '',
+    updateTime: '',
+  }
 }
 
-const goodListOne = async (params) => {
-  let result = await goodGetOneService(params)
-  goodsModel.value = result.data
-  console.log(goodsModel)
+//删除
+const deleteCategory = async (row) => {
+  let result = await CategoryDeleteService(row.categoryId)
+  ElMessage.success(result.msg ? result.msg : '删除成功')
+  giftCategoryList()
+}
+//获取分类信息展示
+const categoryListOne = async (params) => {
+  let result = await CategoryDetailService(params)
+  categoryModel.value = result.data
+  console.log(categoryModel)
 }
 
 //打开修改抽屉
 const open = (row) => {
   visibleDrawer2.value = true
-  let params = row.goodId
-  goodsModel.value = goodListOne(params)
-  goodsModel.value.goodId = params
-  console.log(goodsModel)
+  categoryModel.value = categoryListOne(row.categoryId)
+  console.log(categoryModel.value)
 }
-const goodUpdate = async (params) => {
-  let result = await goodUpdateService(params)
+
+const categoryUpdate = async (params) => {
+  let result = await CategoryUpdateService(params)
   console.log(result)
 }
 
-const update = () => {
-  visibleDrawer2.value = false
-  let params = goodsModel.value
-  let result = goodUpdate(params)
+const update = async () => {
+  let params = categoryModel.value
+  let result = await categoryUpdate(params)
   console.log(result)
   ElMessage.success('修改成功')
-  goodShowList()
+  await giftCategoryList()
+  visibleDrawer2.value = false
   clearModel()
 }
 </script>
@@ -188,7 +173,7 @@ const update = () => {
             circle
             plain
             type="danger"
-            @click="deleteGood(row)"
+            @click="deleteCategory(row)"
           ></el-button>
         </template>
       </el-table-column>
@@ -199,74 +184,12 @@ const update = () => {
 
     <!-- 抽屉 -->
     <el-drawer v-model="visibleDrawer" direction="rtl" size="70%">
-      <el-form :model="goodsModel" label-width="100px">
-        <el-form-item label="商品名称">
+      <el-form :model="categoryModel" label-width="100px">
+        <el-form-item label="类型名称">
           <el-input
-            placeholder=" 请输入商品名称"
-            v-model="goodsModel.goodName"
+            placeholder=" 请输入类型名称"
+            v-model="categoryModel.categoryName"
           ></el-input>
-        </el-form-item>
-        <el-form-item label="商品分类：">
-          <el-select
-            placeholder="请选择"
-            v-model="goodsModel.goodCategoryId"
-            value-key="categoryName"
-            ><el-option
-              v-for="c in categorys"
-              :key="c.categoryId"
-              :label="c.categoryName"
-              :value="c.categoryId"
-            >
-            </el-option
-          ></el-select>
-        </el-form-item>
-        <el-form-item label="所需积分">
-          <el-input
-            placeholder=" 请输入所需积分"
-            v-model="goodsModel.goodPoint"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="商品数量">
-          <el-input
-            placeholder=" 请输入商品数量"
-            v-model="goodsModel.goodCount"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="商品描述">
-          <el-input
-            autosize
-            type="textarea"
-            placeholder="请输入商品描述"
-            v-model="goodsModel.goodDesc"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="文章封面">
-          <!-- 
-    auto-upload:设置是否自动上传
-    action:设置服务器接口路径
-    name:设置上传的文件字段名
-    headers:设置上传的请求头
-    on-success:设置上传成功的回调函数
- -->
-
-          <el-upload
-            class="goodImg-uploader"
-            :auto-upload="true"
-            :show-file-list="false"
-            action="/api/upload"
-            name="file"
-            :headers="{ Authorization: tokenStore.token }"
-            :on-success="updateGoodPic"
-          >
-            <img
-              v-if="goodsModel.goodImg"
-              :src="goodsModel.goodImg"
-              class="goodImg"
-            />
-            <el-icon v-else class="avatar-uploader-icon">
-              <Plus />
-            </el-icon>
-          </el-upload>
         </el-form-item>
         <el-form-item>
           <div style="width: 80%; text-align: center">
@@ -278,66 +201,12 @@ const update = () => {
 
     <!-- 修改抽屉 -->
     <el-drawer v-model="visibleDrawer2" direction="rtl" size="70%">
-      <el-form :model="goodsModel" label-width="100px">
-        <el-form-item label="物品名称">
-          <el-input v-model="goodsModel.goodName"></el-input>
-        </el-form-item>
-        <el-form-item label="商品分类：">
-          <el-select
-            placeholder="请选择"
-            v-model="goodsModel.goodCategoryId"
-            value-key="categoryName"
-            ><el-option
-              v-for="c in categorys"
-              :key="c.categoryId"
-              :label="c.categoryName"
-              :value="c.categoryId"
-            >
-            </el-option
-          ></el-select>
-        </el-form-item>
-        <el-form-item label="所需积分">
-          <el-input
-            placeholder=" 请输入所需积分"
-            v-model="goodsModel.goodPoint"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="商品数量">
-          <el-input
-            placeholder=" 请输入商品数量"
-            v-model="goodsModel.goodCount"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="商品描述">
-          <el-input
-            autosize
-            type="textarea"
-            placeholder="请输入商品描述"
-            v-model="goodsModel.goodDesc"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="文章封面">
-          <el-upload
-            class="goodImg-uploader"
-            :auto-upload="true"
-            :show-file-list="false"
-            action="/api/upload"
-            name="file"
-            :headers="{ Authorization: tokenStore.token }"
-            :on-success="updateGoodPic"
-          >
-            <img
-              v-if="goodsModel.goodImg"
-              :src="goodsModel.goodImg"
-              class="goodImg"
-            />
-            <el-icon v-else class="avatar-uploader-icon">
-              <Plus />
-            </el-icon>
-          </el-upload>
+      <el-form :model="categoryModel" label-width="100px">
+        <el-form-item label="类型名称">
+          <el-input v-model="categoryModel.categoryName"></el-input>
         </el-form-item>
         <el-form-item>
-          <div style="width: 80%; text-align: center">
+          <div style="width: 80%; text-align: left">
             <el-button type="primary" @click="update()">修改</el-button>
           </div>
         </el-form-item>

@@ -171,13 +171,13 @@ const goodUpdate = async (params) => {
   console.log(result)
 }
 
-const update = () => {
-  visibleDrawer2.value = false
+const update = async () => {
   let params = goodsModel.value
-  let result = goodUpdate(params)
+  let result = await goodUpdate(params)
   console.log(result)
   ElMessage.success('修改成功')
-  goodShowList()
+  await goodShowList()
+  visibleDrawer2.value = false
   clearModel()
 }
 </script>
