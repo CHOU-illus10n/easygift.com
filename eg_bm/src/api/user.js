@@ -28,7 +28,7 @@ export const userInfoService = ()=>{
 
 //修改个人信息
 export const userInfoUpdateService = (userInfoData)=>{
-   return request.put('/user/update',userInfoData)
+   return request.post('/resetPassword',userInfoData)
 }
 
 //修改头像

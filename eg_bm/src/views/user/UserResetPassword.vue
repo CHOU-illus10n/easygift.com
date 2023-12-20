@@ -49,10 +49,14 @@ const updateUserInfo = async () => {
           size="large"
         >
           <el-form-item label="登录账号">
-            <el-input v-model="userInfo.username" disabled></el-input>
+            <el-input
+              v-model="userInfo.userName"
+              disabled
+              placeholder=""
+            ></el-input>
           </el-form-item>
           <el-form-item label="用户密码" prop="psd">
-            <el-input v-model="userInfo.password"></el-input>
+            <el-input v-model="userInfo.password" type="password"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="updateUserInfo"
