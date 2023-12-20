@@ -12,6 +12,7 @@ const visibleDrawer = ref(false)
 const visibleDrawer2 = ref(false)
 // const imgUrl = ref()
 const tokenStore = useTokenStore()
+const value = ref('')
 
 //商品分类数据模型
 const categorys = ref([
@@ -150,20 +151,23 @@ const clearModel = () => {
     updateTime: '',
     isDeleted: '',
   }
-}
-
-const goodListOne = async (params) => {
-  let result = await goodGetOneService(params)
-  goodsModel.value = result.data
-  console.log(goodsModel)
+  value.value = ''
 }
 
 //打开修改抽屉
-const open = (row) => {
+const open = async (row) => {
   visibleDrawer2.value = true
-  let params = row.goodId
-  goodsModel.value = goodListOne(params)
-  goodsModel.value.goodId = params
+  let result = await goodGetOneService(row.goodId)
+  goodsModel.value = result.data
+  let good = goodsModel.value
+  console.log(goodsModel.value)
+  for (let j = 0; j < categorys.value.length; j++) {
+    if (good.goodCategoryId == categorys.value[j].categoryId) {
+      good.categoryName = categorys.value[j].categoryName
+      value.value = good.categoryName
+      console.log(value.value)
+    }
+  }
   console.log(goodsModel)
 }
 const goodUpdate = async (params) => {
@@ -172,7 +176,15 @@ const goodUpdate = async (params) => {
 }
 
 const update = async () => {
+  //将value转换为类型id
+  for (let j = 0; j < categorys.value.length; j++) {
+    if (value.value == categorys.value[j].categoryName) {
+      value.value = good.categoryId
+      console.log(value.value)
+    }
+  }
   let params = goodsModel.value
+  params.goodCategoryId = value.value
   let result = await goodUpdate(params)
   console.log(result)
   ElMessage.success('修改成功')
@@ -335,7 +347,7 @@ const update = async () => {
         <el-form-item label="商品分类：">
           <el-select
             placeholder="请选择"
-            v-model="goodsModel.goodCategoryId"
+            v-model="value"
             value-key="categoryName"
             ><el-option
               v-for="c in categorys"
