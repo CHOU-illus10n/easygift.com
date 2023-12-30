@@ -16,6 +16,7 @@ import GoodManageVue from '@/views/mall/GoodManage.vue'
 import GoodOrderVue from '@/views/mall/GoodOrder.vue'
 import UserManageVue from '@/views/user/UserManage.vue'
 import CategoryManageVue from '@/views/basic/CategoryManage.vue'
+import CommunityManageVue from '@/views/basic/CommunityManage.vue';
 //定义路由关系
 const routes = [
     { path: '/login', component: LoginVue },
@@ -29,6 +30,7 @@ const routes = [
             { path:'/good/order',component:GoodOrderVue},
             { path:'/user',component:UserManageVue},
             { path:'/category',component:CategoryManageVue},
+            {path:'/community',component:CommunityManageVue},
             // { path: '/article/category', component: ArticleCategoryVue },
             // { path: '/article/manage', component: ArticleManageVue },
             { path: '/user/info', component: UserInfoVue },

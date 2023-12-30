@@ -162,7 +162,7 @@ const handleCommand = (command) => {
             </el-icon>
             <span>物品类型管理</span>
           </el-menu-item>
-          <el-menu-item>
+          <el-menu-item index="/community">
             <el-icon><HomeFilled /></el-icon>
             <span>小区管理</span>
           </el-menu-item>

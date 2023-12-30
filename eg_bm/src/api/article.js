@@ -112,3 +112,23 @@ export const goodGetOneService = (id)=>{
 export const goodUpdateService = (params)=>{
     return request.post('/good/update',params);
 }
+
+export const communityListService = (params)=>{
+    return request.get('/communityInfo',{params:params});
+}
+
+export const communityAddService = (params)=>{
+    return request.post('/communityInfo/add',params);
+}
+
+export const communityUpdateService = (params)=>{
+    return request.post('/communityInfo/update',params);
+}
+
+export const communityGetOneService = (id)=>{
+    return request.get('/communityInfo/getOne?id='+id);
+}
+
+export const communityDeleteService = (id)=>{
+    return request.post('/communityInfo/delete?id='+id);
+}
